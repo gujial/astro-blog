@@ -1,6 +1,6 @@
 ---
-import HeaderLink from './HeaderLink.astro';
-import { SITE_TITLE } from '../consts';
+import HeaderLink from "./HeaderLink.astro";
+import { SITE_TITLE } from "../consts";
 ---
 
 <header>
@@ -10,19 +10,79 @@ import { SITE_TITLE } from '../consts';
 			<HeaderLink href="/blog">Blog</HeaderLink>
 			<HeaderLink href="/about">About</HeaderLink>
 		</div>
-		<h2><a href="/">{SITE_TITLE}</a></h2>
+		<h2 class="title-area">
+			<a href="/">{SITE_TITLE}</a>
+			<label class="sr-only" for="theme-select">Theme</label>
+			<select id="theme-select" name="theme-select" aria-label="Theme">
+				<option value="system">系统默认</option>
+				<option value="light">浅色</option>
+				<option value="dark">深色</option>
+			</select>
+		</h2>
 	</nav>
 </header>
+<script>
+	function getCurrentPreference() {
+		const pref = document.documentElement.getAttribute("data-theme-preference");
+		return pref || "system";
+	}
+
+	function initThemeSelect() {
+		const themeSelect = document.getElementById("theme-select");
+		if (!(themeSelect instanceof HTMLSelectElement)) return;
+
+		themeSelect.value = getCurrentPreference();
+
+		themeSelect.addEventListener("change", () => {
+			const selected = themeSelect.value;
+			document.dispatchEvent(
+				new CustomEvent("set-theme", {
+					detail: selected === "system" ? null : selected,
+				}),
+			);
+		});
+
+		const observer = new MutationObserver(() => {
+			themeSelect.value = getCurrentPreference();
+		});
+
+		observer.observe(document.documentElement, {
+			attributes: true,
+			attributeFilter: ["data-theme-preference"],
+		});
+	}
+
+	initThemeSelect();
+	document.addEventListener("astro:page-load", initThemeSelect);
+</script>
 <style>
 	header {
 		margin: 0;
 		padding: 0 1em;
-		background: white;
+		background: rgb(var(--surface));
 		box-shadow: 0 2px 8px rgba(var(--black), 5%);
 	}
 	h2 {
 		margin: 0;
 		font-size: 1em;
+	}
+	.title-area {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+	}
+	#theme-select {
+		border: 1px solid rgb(var(--gray-light));
+		background: rgb(var(--surface));
+		color: rgb(var(--gray-dark));
+		border-radius: 8px;
+		padding: 0.35rem 0.55rem;
+		font: inherit;
+		line-height: 1.2;
+	}
+	#theme-select:focus-visible {
+		outline: 2px solid var(--accent);
+		outline-offset: 2px;
 	}
 
 	h2 a,
@@ -33,10 +93,11 @@ import { SITE_TITLE } from '../consts';
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
+		gap: 1rem;
 	}
 	nav a {
 		padding: 1em 0.5em;
-		color: var(--black);
+		color: rgb(var(--black));
 		border-bottom: 4px solid transparent;
 		text-decoration: none;
 	}
@@ -51,6 +112,14 @@ import { SITE_TITLE } from '../consts';
 	@media (max-width: 720px) {
 		.social-links {
 			display: none;
+		}
+		nav {
+			flex-wrap: wrap;
+			justify-content: center;
+		}
+		.title-area {
+			width: 100%;
+			justify-content: center;
 		}
 	}
 </style>

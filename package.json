@@ -19,9 +19,12 @@
 		"astro": "5.16.9",
 		"astro-mermaid": "^2.1.0",
 		"mermaid": "^11.16.0",
+		"rehype-katex": "^7.0.1",
+		"remark-math": "^6.0.0",
 		"typescript": "5.9.3"
 	},
 	"devDependencies": {
+		"astro-themes": "^0.2.7",
 		"wrangler": "4.88.0"
 	},
 	"engines": {
