@@ -40,7 +40,7 @@ body {
 	word-wrap: break-word;
 	overflow-wrap: break-word;
 	color: rgb(var(--gray-dark));
-	font-size: 20px;
+	font-size: 17px;
 	line-height: 1.7;
 }
 main {
@@ -92,10 +92,10 @@ p {
 }
 textarea {
 	width: 100%;
-	font-size: 16px;
+	font-size: 13px;
 }
 input {
-	font-size: 16px;
+	font-size: 13px;
 }
 table {
 	width: 100%;
@@ -109,10 +109,12 @@ code {
 	padding: 2px 5px;
 	background-color: rgb(var(--gray-light));
 	border-radius: 2px;
+	font-size: 13px;
 }
 pre {
 	padding: 1.5em;
 	border-radius: 8px;
+	font-size: 13px;
 }
 pre > code {
 	all: unset;
@@ -121,7 +123,7 @@ blockquote {
 	border-left: 4px solid var(--accent);
 	padding: 0 0 0 20px;
 	margin: 0px;
-	font-size: 1.333em;
+	font-size: 15px;
 }
 hr {
 	border: none;
@@ -129,7 +131,7 @@ hr {
 }
 @media (max-width: 720px) {
 	body {
-		font-size: 18px;
+		font-size: 16px;
 	}
 	main {
 		padding: 1em;
