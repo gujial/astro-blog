@@ -119,6 +119,7 @@ const tocHeadings = headings.filter(
 				top: 6.5rem;
 				right: 1rem;
 				width: min(18rem, calc(100vw - 2rem));
+				max-width: calc(100vw - 2rem);
 				padding: 1rem;
 				border: 1px solid rgb(var(--gray-light));
 				border-radius: 16px;
@@ -131,8 +132,14 @@ const tocHeadings = headings.filter(
 				display: none;
 			}
 			.toc--collapsed {
-				width: auto;
-				padding: 0.55rem;
+				width: max-content;
+				max-width: max-content;
+				padding: 0;
+				border: 0;
+				background: transparent;
+				box-shadow: none;
+				backdrop-filter: none;
+				-webkit-backdrop-filter: none;
 			}
 			.toc__header {
 				display: flex;
@@ -174,6 +181,8 @@ const tocHeadings = headings.filter(
 			.toc--collapsed .toc__toggle {
 				min-width: 2.75rem;
 				padding-inline: 0.55rem;
+				background: rgba(var(--surface), 0.96);
+				box-shadow: var(--box-shadow);
 			}
 			.toc__nav {
 				text-align: left;
@@ -207,14 +216,28 @@ const tocHeadings = headings.filter(
 					top: 5.5rem;
 					right: 0.75rem;
 					width: min(16.5rem, calc(100vw - 1.5rem));
+					max-width: calc(100vw - 1.5rem);
 				}
 			}
 			@media (max-width: 720px) {
 				.toc {
 					top: auto;
-					bottom: 0.75rem;
+					bottom: calc(env(safe-area-inset-bottom, 0px) + 0.75rem);
 					right: 0.75rem;
-					width:fit-content
+					left: auto;
+					width: auto;
+					max-width: calc(100vw - 1.5rem);
+					backdrop-filter: none;
+					-webkit-backdrop-filter: none;
+				}
+				.toc--collapsed {
+					left: auto;
+					right: 0.75rem;
+					width: max-content;
+					max-width: max-content;
+				}
+				.toc:not(.toc--collapsed) {
+					width: min(16.5rem, calc(100vw - 1.5rem));
 				}
 			}
 		</style>
