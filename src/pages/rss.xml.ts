@@ -26,6 +26,11 @@ export async function GET(context: APIContext) {
     a.data.pubDate > b.data.pubDate ? -1 : 1
   );
 
+  const channelImageUrl = new URL("/favicon.png", context.site).href;
+  const latestPostDate = posts
+    .map((post) => post.data.updatedDate ?? post.data.pubDate)
+    .sort((a, b) => b.getTime() - a.getTime())[0];
+
   // Loop over blog posts to create feed items for each, including full content.
   const feedItems: RSSFeedItem[] = [];
   for (const post of posts) {
@@ -33,25 +38,32 @@ export async function GET(context: APIContext) {
     const { Content } = await render(post);
     // Use the Astro container to render the content to a string.
     const rawContent = await container.renderToString(Content);
+    const heroSrc = post.data.heroImage?.src;
+    const heroImageHtml = heroSrc
+      ? `<p><img src="${heroSrc}" alt="${post.data.title} 封面图" /></p>`
+      : "";
     // Process and sanitize the raw content:
     // - Removes `<!DOCTYPE html>` preamble
     // - Makes link `href` and image `src` attributes absolute instead of relative
     // - Strips any `<script>` and `<style>` tags
     // Thanks @Princesseuh — https://github.com/Princesseuh/erika.florist/blob/1827288c14681490fa301400bfd815acb53463e9/src/middleware.ts
-    const content = await transform(rawContent.replace(/^<!DOCTYPE html>/, ""), [
+    const content = await transform(
+      `${heroImageHtml}${rawContent.replace(/^<!DOCTYPE html>/, "")}`,
+      [
       async (node) => {
         await walk(node, (node) => {
           if (node.name === "a" && node.attributes.href?.startsWith("/")) {
             node.attributes.href = baseUrl + node.attributes.href;
           }
-          if (node.name === "img" && node.attributes.src?.startsWith("/")) {
-            node.attributes.src = baseUrl + node.attributes.src;
+          if (node.name === "img" && node.attributes.src) {
+            node.attributes.src = new URL(node.attributes.src, baseUrl).href;
           }
         });
         return node;
       },
       sanitize({ dropElements: ["script", "style"] }),
-    ]);
+    ]
+    );
     feedItems.push({ ...post.data, link: `/blog/${post.id}/`, content });
   }
 
@@ -61,5 +73,10 @@ export async function GET(context: APIContext) {
     description: SITE_DESCRIPTION,
     site: baseUrl,
     items: feedItems,
+    customData: [
+      `<language>zh-cn</language>`,
+      `<lastBuildDate>${(latestPostDate ?? new Date()).toUTCString()}</lastBuildDate>`,
+      `<image><url>${channelImageUrl}</url><title>${SITE_TITLE}</title><link>${new URL("/", context.site).href}</link></image>`,
+    ].join(""),
   });
 }
