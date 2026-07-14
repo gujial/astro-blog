@@ -40,9 +40,9 @@ const tocHeadings = headings.filter(
 		<BaseHead title={title} description={description} />
 		<style>
 			main {
-				width: calc(100% - 2em);
-				max-width: 100%;
-				margin: 0;
+				width: 900px;
+				max-width: calc(100% - 2em);
+				margin: auto;
 			}
 			.hero-image {
 				width: 100%;
@@ -97,20 +97,30 @@ const tocHeadings = headings.filter(
 				font-size: 0.82rem;
 				line-height: 1.2;
 				text-decoration: none;
-				transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+				transition:
+					border-color 0.2s ease,
+					color 0.2s ease,
+					background 0.2s ease;
 			}
 			.tag-chip:hover {
 				color: var(--accent);
-				border-color: color-mix(in srgb, var(--accent) 45%, rgb(var(--gray-light)));
-				background: color-mix(in srgb, var(--accent) 10%, rgb(var(--surface)));
+				border-color: color-mix(
+					in srgb,
+					var(--accent) 45%,
+					rgb(var(--gray-light))
+				);
+				background: color-mix(
+					in srgb,
+					var(--accent) 10%,
+					rgb(var(--surface))
+				);
 			}
 			.post-shell {
 				position: relative;
 				display: block;
 			}
 			.post-shell__article {
-				width: 900px;
-				max-width: calc(100% - 2em);
+				width: 100%;
 				margin: 0 auto;
 			}
 			.toc {
@@ -176,7 +186,9 @@ const tocHeadings = headings.filter(
 				color: rgb(var(--gray));
 				text-align: left;
 				white-space: nowrap;
-				transition: max-width 0.24s ease, opacity 0.2s ease;
+				transition:
+					max-width 0.24s ease,
+					opacity 0.2s ease;
 			}
 			.toc__toggle {
 				border: 1px solid rgb(var(--gray-light));
@@ -191,7 +203,11 @@ const tocHeadings = headings.filter(
 			}
 			.toc__toggle:hover {
 				color: var(--accent);
-				border-color: color-mix(in srgb, var(--accent) 45%, rgb(var(--gray-light)));
+				border-color: color-mix(
+					in srgb,
+					var(--accent) 45%,
+					rgb(var(--gray-light))
+				);
 			}
 			.toc--collapsed .toc__toggle {
 				min-width: 2.75rem;
@@ -205,7 +221,10 @@ const tocHeadings = headings.filter(
 				opacity: 1;
 				overflow: auto;
 				transform: translateY(0);
-				transition: max-height 0.28s ease, opacity 0.2s ease, transform 0.28s ease;
+				transition:
+					max-height 0.28s ease,
+					opacity 0.2s ease,
+					transform 0.28s ease;
 			}
 			.toc ol {
 				list-style: none;
@@ -269,54 +288,67 @@ const tocHeadings = headings.filter(
 			<div class="post-shell">
 				<article class="post-shell__article">
 					<div class="hero-image">
-					{
-						heroImage && (
-							<Image
-								class="hero-image__image"
-								src={heroImage}
-								alt=""
-								width={1020}
-								height={510}
-							/>
-						)
-					}
-				</div>
-				<div class="prose">
-					<div class="title">
-						<div class="date">
-							<FormattedDate date={pubDate} />
+						{
+							heroImage && (
+								<Image
+									class="hero-image__image"
+									src={heroImage}
+									alt=""
+									width={1020}
+									height={510}
+								/>
+							)
+						}
+					</div>
+					<div class="prose">
+						<div class="title">
+							<div class="date">
+								<FormattedDate date={pubDate} />
+								{
+									updatedDate && (
+										<div class="last-updated-on">
+											Last updated on{" "}
+											<FormattedDate date={updatedDate} />
+										</div>
+									)
+								}
+							</div>
+							<h1>{title}</h1>
 							{
-								updatedDate && (
-									<div class="last-updated-on">
-										Last updated on{" "}
-										<FormattedDate date={updatedDate} />
+								tags.length > 0 && (
+									<div class="tags" aria-label="文章标签">
+										{tags.map((tag) => (
+											<a
+												class="tag-chip"
+												href={`/tags/${encodeURIComponent(tag.toLowerCase())}/`}
+											>
+												#{tag}
+											</a>
+										))}
 									</div>
 								)
 							}
+							<hr />
 						</div>
-						<h1>{title}</h1>
-						{
-							tags.length > 0 && (
-								<div class="tags" aria-label="文章标签">
-									{tags.map((tag) => (
-										<a class="tag-chip" href={`/tags/${encodeURIComponent(tag.toLowerCase())}/`}>
-											#{tag}
-										</a>
-									))}
-								</div>
-							)
-						}
-						<hr />
-					</div>
-					<slot />
+						<slot />
 					</div>
 				</article>
 				{
 					tocHeadings.length > 0 && (
-						<aside class="toc toc--collapsed" aria-label="文章目录" data-toc>
+						<aside
+							class="toc toc--collapsed"
+							aria-label="文章目录"
+							data-toc
+						>
 							<div class="toc__header">
 								<p class="toc__title">目录</p>
-								<button class="toc__toggle" type="button" aria-expanded="false" aria-controls="toc-list" data-toc-toggle>
+								<button
+									class="toc__toggle"
+									type="button"
+									aria-expanded="false"
+									aria-controls="toc-list"
+									data-toc-toggle
+								>
 									目录
 								</button>
 							</div>
@@ -324,7 +356,10 @@ const tocHeadings = headings.filter(
 								<ol>
 									{tocHeadings.map((heading) => (
 										<li>
-											<a class={`toc-link toc-link--depth-${heading.depth}`} href={`#${heading.slug}`}>
+											<a
+												class={`toc-link toc-link--depth-${heading.depth}`}
+												href={`#${heading.slug}`}
+											>
 												{heading.text}
 											</a>
 										</li>
@@ -337,22 +372,21 @@ const tocHeadings = headings.filter(
 			</div>
 			<div class="prose">
 				<script
-				src="https://giscus.app/client.js"
-				data-repo="gujial/astro-blog"
-				data-repo-id="R_kgDOTVv5EQ"
-				data-category="Announcements"
-				data-category-id="DIC_kwDOTVv5Ec4DBJwv"
-				data-mapping="pathname"
-				data-strict="0"
-				data-reactions-enabled="1"
-				data-emit-metadata="0"
-				data-input-position="bottom"
-				data-theme="preferred_color_scheme"
-				data-lang="zh-CN"
-				data-loading="lazy"
-				crossorigin="anonymous"
-				async
-			></script>
+					src="https://giscus.app/client.js"
+					data-repo="gujial/astro-blog"
+					data-repo-id="R_kgDOTVv5EQ"
+					data-category="Announcements"
+					data-category-id="DIC_kwDOTVv5Ec4DBJwv"
+					data-mapping="pathname"
+					data-strict="0"
+					data-reactions-enabled="1"
+					data-emit-metadata="0"
+					data-input-position="bottom"
+					data-theme="preferred_color_scheme"
+					data-lang="zh-CN"
+					data-loading="lazy"
+					crossorigin="anonymous"
+					async></script>
 			</div>
 			<script>
 				const toc = document.querySelector("[data-toc]");
@@ -360,10 +394,17 @@ const tocHeadings = headings.filter(
 				const nav = document.querySelector("[data-toc-nav]");
 				const storageKey = "astro-blog-toc-collapsed";
 
-				if (toc instanceof HTMLElement && toggle instanceof HTMLButtonElement && nav instanceof HTMLElement) {
+				if (
+					toc instanceof HTMLElement &&
+					toggle instanceof HTMLButtonElement &&
+					nav instanceof HTMLElement
+				) {
 					const applyState = (collapsed: boolean) => {
 						toc.classList.toggle("toc--collapsed", collapsed);
-						toggle.setAttribute("aria-expanded", String(!collapsed));
+						toggle.setAttribute(
+							"aria-expanded",
+							String(!collapsed),
+						);
 						toggle.textContent = collapsed ? "目录" : "收回";
 					};
 
@@ -371,9 +412,13 @@ const tocHeadings = headings.filter(
 					applyState(savedState === null ? true : savedState === "1");
 
 					toggle.addEventListener("click", () => {
-						const collapsed = !toc.classList.contains("toc--collapsed");
+						const collapsed =
+							!toc.classList.contains("toc--collapsed");
 						applyState(collapsed);
-						window.localStorage.setItem(storageKey, collapsed ? "1" : "0");
+						window.localStorage.setItem(
+							storageKey,
+							collapsed ? "1" : "0",
+						);
 					});
 				}
 			</script>
