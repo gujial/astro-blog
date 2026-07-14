@@ -17,8 +17,41 @@ const posts = (await getCollection("blog")).sort(
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
 		<style>
+			:global(body) {
+				background-size: 100% 260px;
+			}
 			main {
 				width: 960px;
+			}
+			.toolbar {
+				display: grid;
+				grid-template-columns: minmax(0, 1fr) 220px;
+				gap: 0.75rem;
+				align-items: center;
+				margin-bottom: 1.25rem;
+				padding: 0.5rem;
+				border-radius: 12px;
+				background: color-mix(in srgb, var(--accent) 10%, rgb(var(--surface)));
+			}
+			.search-input,
+			.sort-select {
+				width: 100%;
+				padding: 0.55rem 0.7rem;
+				border: 1px solid rgb(var(--gray-light));
+				border-radius: 10px;
+				background: rgb(var(--surface));
+				color: rgb(var(--gray-dark));
+				font: inherit;
+				font-size: 0.95rem;
+			}
+			.search-input::placeholder {
+				color: rgb(var(--gray));
+			}
+			.search-input:focus,
+			.sort-select:focus {
+				outline: 2px solid color-mix(in srgb, var(--accent) 35%, transparent);
+				outline-offset: 1px;
+				border-color: var(--accent);
 			}
 			ul {
 				display: grid;
@@ -77,7 +110,52 @@ const posts = (await getCollection("blog")).sort(
 			ul a:hover .post-image {
 				box-shadow: var(--box-shadow);
 			}
+			.list-meta {
+				margin: 0 0 0.75rem;
+				color: rgb(var(--gray));
+				font-size: 0.9rem;
+			}
+			.empty-state {
+				margin: 0;
+				padding: 0.75rem 0;
+				color: rgb(var(--gray));
+				font-size: 0.95rem;
+			}
+			.pagination {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.5rem;
+				justify-content: center;
+				align-items: center;
+				margin-top: 1.25rem;
+			}
+			.pagination button {
+				border: 1px solid rgb(var(--gray-light));
+				background: #fff;
+				color: rgb(var(--gray-dark));
+				padding: 0.35rem 0.65rem;
+				border-radius: 999px;
+				cursor: pointer;
+				font: inherit;
+				font-size: 0.9rem;
+				line-height: 1.2;
+			}
+			.pagination button[disabled] {
+				opacity: 0.45;
+				cursor: not-allowed;
+			}
+			.pagination button[aria-current="page"] {
+				background: var(--accent);
+				border-color: var(--accent);
+				color: #fff;
+			}
 			@media (max-width: 720px) {
+				:global(body) {
+					background-size: 100% 210px;
+				}
+				.toolbar {
+					grid-template-columns: 1fr;
+				}
 				ul {
 					gap: 1rem;
 				}
@@ -102,10 +180,29 @@ const posts = (await getCollection("blog")).sort(
 		<Header />
 		<main>
 			<section>
-				<ul>
+				<div class="toolbar">
+					<input
+						type="search"
+						class="search-input"
+						placeholder="搜索标题..."
+						aria-label="搜索文章标题"
+						data-search
+					/>
+					<select class="sort-select" aria-label="按时间排序" data-sort>
+						<option value="desc">时间倒序（最新优先）</option>
+						<option value="asc">时间正序（最早优先）</option>
+					</select>
+				</div>
+				<p class="list-meta" data-meta></p>
+				<p class="empty-state" data-empty hidden>没有找到符合条件的文章。</p>
+				<ul data-post-list>
 					{
 						posts.map((post) => (
-							<li>
+							<li
+								data-post-item
+								data-title={post.data.title.toLowerCase()}
+								data-pub-date={post.data.pubDate.valueOf()}
+							>
 								<a href={`/blog/${post.id}/`}>
 									{post.data.heroImage && (
 										<Image
@@ -129,8 +226,131 @@ const posts = (await getCollection("blog")).sort(
 						))
 					}
 				</ul>
+				<nav class="pagination" aria-label="博客分页" data-pagination></nav>
 			</section>
 		</main>
 		<Footer />
+		<script>
+			const PAGE_SIZE = 10;
+			const list = document.querySelector("[data-post-list]") as HTMLUListElement | null;
+			const searchInput = document.querySelector("[data-search]") as HTMLInputElement | null;
+			const sortSelect = document.querySelector("[data-sort]") as HTMLSelectElement | null;
+			const meta = document.querySelector("[data-meta]") as HTMLParagraphElement | null;
+			const empty = document.querySelector("[data-empty]") as HTMLParagraphElement | null;
+			const pagination = document.querySelector("[data-pagination]") as HTMLElement | null;
+			const items: HTMLElement[] = list
+				? Array.from(list.querySelectorAll<HTMLElement>("[data-post-item]"))
+				: [];
+
+			const state = {
+				query: "",
+				sort: "desc" as "asc" | "desc",
+				page: 1,
+			};
+
+			const compareByDate = (a: HTMLElement, b: HTMLElement, direction: "asc" | "desc") => {
+				const aDate = Number(a.dataset.pubDate || 0);
+				const bDate = Number(b.dataset.pubDate || 0);
+				return direction === "asc" ? aDate - bDate : bDate - aDate;
+			};
+
+			const getFilteredAndSorted = () => {
+				const query = state.query.trim().toLowerCase();
+				const filtered = items.filter((item) =>
+					(item.dataset.title || "").includes(query),
+				);
+				return filtered.sort((a, b) => compareByDate(a, b, state.sort));
+			};
+
+			const renderPagination = (totalPages: number) => {
+				if (!pagination) return;
+				pagination.innerHTML = "";
+
+				const createButton = (
+					label: string,
+					page: number,
+					disabled = false,
+					isCurrent = false,
+				) => {
+					const button = document.createElement("button");
+					button.type = "button";
+					button.textContent = label;
+					button.disabled = disabled;
+					if (isCurrent) {
+						button.setAttribute("aria-current", "page");
+					}
+					button.addEventListener("click", () => {
+						state.page = page;
+						render();
+					});
+					return button;
+				};
+
+				pagination.appendChild(
+					createButton("上一页", state.page - 1, state.page <= 1),
+				);
+
+				for (let page = 1; page <= totalPages; page += 1) {
+					pagination.appendChild(
+						createButton(String(page), page, false, page === state.page),
+					);
+				}
+
+				pagination.appendChild(
+					createButton("下一页", state.page + 1, state.page >= totalPages),
+				);
+			};
+
+			const render = () => {
+				const filtered = getFilteredAndSorted();
+				const total = filtered.length;
+				const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+				state.page = Math.min(state.page, totalPages);
+
+				const start = (state.page - 1) * PAGE_SIZE;
+				const end = start + PAGE_SIZE;
+				const pageItems = filtered.slice(start, end);
+				const pageSet = new Set(pageItems);
+
+				if (list) {
+					const hiddenItems = items.filter((item) => !filtered.includes(item));
+					for (const item of [...pageItems, ...hiddenItems]) {
+						list.appendChild(item);
+					}
+				}
+
+				items.forEach((item) => {
+					item.hidden = !pageSet.has(item);
+				});
+
+				if (meta) {
+					meta.textContent = `共 ${total} 篇，当前第 ${state.page} / ${totalPages} 页，每页 ${PAGE_SIZE} 篇`;
+				}
+
+				if (empty) {
+					empty.hidden = total !== 0;
+				}
+
+				renderPagination(totalPages);
+			};
+
+			searchInput?.addEventListener("input", (event: Event) => {
+				if (!(event.currentTarget instanceof HTMLInputElement)) return;
+				const target = event.currentTarget;
+				state.query = target.value;
+				state.page = 1;
+				render();
+			});
+
+			sortSelect?.addEventListener("change", (event: Event) => {
+				if (!(event.currentTarget instanceof HTMLSelectElement)) return;
+				const target = event.currentTarget;
+				state.sort = target.value === "asc" ? "asc" : "desc";
+				state.page = 1;
+				render();
+			});
+
+			render();
+		</script>
 	</body>
 </html>
