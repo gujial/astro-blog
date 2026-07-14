@@ -126,9 +126,20 @@ const tocHeadings = headings.filter(
 				box-shadow: var(--box-shadow);
 				z-index: 20;
 				backdrop-filter: blur(10px);
+				transition:
+					width 0.28s ease,
+					max-width 0.28s ease,
+					padding 0.28s ease,
+					background-color 0.2s ease,
+					box-shadow 0.2s ease,
+					border-color 0.2s ease;
 			}
 			.toc--collapsed .toc__nav {
-				display: none;
+				max-height: 0;
+				opacity: 0;
+				overflow: hidden;
+				transform: translateY(-6px);
+				pointer-events: none;
 			}
 			.toc--collapsed {
 				width: max-content;
@@ -144,23 +155,28 @@ const tocHeadings = headings.filter(
 				display: flex;
 				align-items: center;
 				justify-content: space-between;
-				gap: 0.75rem;
 				margin-bottom: 0.75rem;
+				transition: margin-bottom 0.24s ease;
 			}
 			.toc--collapsed .toc__header {
 				margin-bottom: 0;
-				justify-content: center;
 			}
 			.toc--collapsed .toc__title {
-				display: none;
+				max-width: 0;
+				opacity: 0;
+				overflow: hidden;
+				pointer-events: none;
 			}
 			.toc__title {
 				margin: 0;
+				max-width: 8rem;
 				font-size: 0.9rem;
 				text-transform: uppercase;
 				letter-spacing: 0.08em;
 				color: rgb(var(--gray));
 				text-align: left;
+				white-space: nowrap;
+				transition: max-width 0.24s ease, opacity 0.2s ease;
 			}
 			.toc__toggle {
 				border: 1px solid rgb(var(--gray-light));
@@ -185,6 +201,11 @@ const tocHeadings = headings.filter(
 			}
 			.toc__nav {
 				text-align: left;
+				max-height: min(55vh, 26rem);
+				opacity: 1;
+				overflow: auto;
+				transform: translateY(0);
+				transition: max-height 0.28s ease, opacity 0.2s ease, transform 0.28s ease;
 			}
 			.toc ol {
 				list-style: none;
@@ -292,11 +313,11 @@ const tocHeadings = headings.filter(
 				</article>
 				{
 					tocHeadings.length > 0 && (
-						<aside class="toc" aria-label="文章目录" data-toc>
+						<aside class="toc toc--collapsed" aria-label="文章目录" data-toc>
 							<div class="toc__header">
 								<p class="toc__title">目录</p>
-								<button class="toc__toggle" type="button" aria-expanded="true" aria-controls="toc-list" data-toc-toggle>
-									收回
+								<button class="toc__toggle" type="button" aria-expanded="false" aria-controls="toc-list" data-toc-toggle>
+									目录
 								</button>
 							</div>
 							<nav class="toc__nav" id="toc-list" data-toc-nav>
@@ -344,7 +365,6 @@ const tocHeadings = headings.filter(
 						toc.classList.toggle("toc--collapsed", collapsed);
 						toggle.setAttribute("aria-expanded", String(!collapsed));
 						toggle.textContent = collapsed ? "目录" : "收回";
-						nav.hidden = collapsed;
 					};
 
 					const savedState = window.localStorage.getItem(storageKey);
