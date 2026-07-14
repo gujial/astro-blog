@@ -110,7 +110,7 @@ const tocHeadings = headings.filter(
 				display: block;
 			}
 			.post-shell__article {
-				width: 900px;
+				width: 720px;
 				max-width: calc(100% - 2em);
 				margin: 0 auto;
 			}
@@ -326,7 +326,7 @@ const tocHeadings = headings.filter(
 					};
 
 					const savedState = window.localStorage.getItem(storageKey);
-					applyState(savedState === "1");
+					applyState(savedState === null ? true : savedState === "1");
 
 					toggle.addEventListener("click", () => {
 						const collapsed = !toc.classList.contains("toc--collapsed");
