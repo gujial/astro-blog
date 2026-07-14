@@ -120,6 +120,10 @@ img {
 	height: auto;
 	border-radius: 8px;
 }
+.prose img {
+	display: block;
+	margin: 1.5em auto;
+}
 code {
 	padding: 2px 5px;
 	background-color: rgb(var(--gray-light));
