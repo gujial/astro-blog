@@ -8,7 +8,7 @@ tags: ["LLM", "LangChain", "Prompt Engineering", "Python"]
 
 毕业多年还是经常回忆起母校的物理实验室老师，他经常在课上发表慷慨激昂的演讲，虽然对他传递的价值观不敢苟同，但他那充斥着呼市方言的口音和激情满满的神情，至今仍历历在目。为此，我曾通过 VuePress 搭建了一个收集他演讲稿的网站，以便随时回忆高中生活。
 
-[李立军选集](https://li-jun-collection.vercel.app/)
+[李立军选集](https://li-jun.gujial.cc/)
 
 最近学习 LLM 时突然想起了这个网站，遗憾的是，现有的语料数据量远远不足以微调（Fine-tune）一个真正的大语言模型，但利用提示词工程（Prompt Engineering）实现一个演讲稿生成器还是绰绰有余的。
 
