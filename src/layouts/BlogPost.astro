@@ -58,10 +58,9 @@ const tocHeadings = headings.filter(
 				object-fit: cover;
 			}
 			.prose {
-				width: 720px;
-				max-width: calc(100% - 2em);
-				margin: auto;
-				padding: 1em;
+				width: 100%;
+				margin: 0;
+				padding: 0;
 				color: rgb(var(--gray-dark));
 			}
 			.title {
@@ -110,7 +109,7 @@ const tocHeadings = headings.filter(
 				display: block;
 			}
 			.post-shell__article {
-				width: 720px;
+				width: 900px;
 				max-width: calc(100% - 2em);
 				margin: 0 auto;
 			}
@@ -219,7 +218,7 @@ const tocHeadings = headings.filter(
 					max-width: calc(100vw - 1.5rem);
 				}
 			}
-			@media (max-width: 720px) {
+			@media (max-width: 900px) {
 				.toc {
 					top: auto;
 					bottom: calc(env(safe-area-inset-bottom, 0px) + 0.75rem);
