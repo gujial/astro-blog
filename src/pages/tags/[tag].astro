@@ -29,6 +29,7 @@ const posts = (await getCollection("blog"))
 	<head>
 		<BaseHead title={`标签: #${activeTag}`} description={`标签 #${activeTag} 下的文章列表`} />
 		<style>
+			:global(body) { background-size: 100% 230px; }
 			main {
 				width: 960px;
 			}
@@ -104,6 +105,7 @@ const posts = (await getCollection("blog"))
 				box-shadow: var(--box-shadow);
 			}
 			@media (max-width: 720px) {
+				background-size: 100% 200px;
 				ul {
 					gap: 1rem;
 				}
