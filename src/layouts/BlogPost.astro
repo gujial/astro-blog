@@ -1,5 +1,6 @@
 ---
 import type { ImageMetadata } from "astro";
+import type { MarkdownHeading } from "astro";
 import { Image } from "astro:assets";
 import type { CollectionEntry } from "astro:content";
 import BaseHead from "../components/BaseHead.astro";
@@ -10,10 +11,22 @@ import FormattedDate from "../components/FormattedDate.astro";
 type Props = Omit<CollectionEntry<"blog">["data"], "heroImage" | "tags"> & {
 	heroImage?: ImageMetadata;
 	tags?: string[];
+	headings?: MarkdownHeading[];
 };
 
-const { title, description, pubDate, updatedDate, heroImage, tags = [] } =
-	Astro.props as Props;
+const {
+	title,
+	description,
+	pubDate,
+	updatedDate,
+	heroImage,
+	tags = [],
+	headings = [],
+} = Astro.props as Props;
+
+const tocHeadings = headings.filter(
+	(heading) => heading.depth >= 2 && heading.depth <= 3,
+);
 ---
 
 <html>
@@ -92,14 +105,127 @@ const { title, description, pubDate, updatedDate, heroImage, tags = [] } =
 				border-color: color-mix(in srgb, var(--accent) 45%, rgb(var(--gray-light)));
 				background: color-mix(in srgb, var(--accent) 10%, rgb(var(--surface)));
 			}
+			.post-shell {
+				position: relative;
+				display: block;
+			}
+			.post-shell__article {
+				width: 720px;
+				max-width: calc(100% - 2em);
+				margin: 0 auto;
+			}
+			.toc {
+				position: fixed;
+				top: 6.5rem;
+				right: 1rem;
+				width: min(18rem, calc(100vw - 2rem));
+				padding: 1rem;
+				border: 1px solid rgb(var(--gray-light));
+				border-radius: 16px;
+				background: rgba(var(--surface), 0.96);
+				box-shadow: var(--box-shadow);
+				z-index: 20;
+				backdrop-filter: blur(10px);
+			}
+			.toc--collapsed .toc__nav {
+				display: none;
+			}
+			.toc--collapsed {
+				width: auto;
+				padding: 0.55rem;
+			}
+			.toc__header {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 0.75rem;
+				margin-bottom: 0.75rem;
+			}
+			.toc--collapsed .toc__header {
+				margin-bottom: 0;
+				justify-content: center;
+			}
+			.toc--collapsed .toc__title {
+				display: none;
+			}
+			.toc__title {
+				margin: 0;
+				font-size: 0.9rem;
+				text-transform: uppercase;
+				letter-spacing: 0.08em;
+				color: rgb(var(--gray));
+				text-align: left;
+			}
+			.toc__toggle {
+				border: 1px solid rgb(var(--gray-light));
+				border-radius: 999px;
+				background: rgb(var(--surface));
+				color: rgb(var(--gray-dark));
+				padding: 0.3rem 0.7rem;
+				font: inherit;
+				font-size: 0.82rem;
+				line-height: 1;
+				cursor: pointer;
+			}
+			.toc__toggle:hover {
+				color: var(--accent);
+				border-color: color-mix(in srgb, var(--accent) 45%, rgb(var(--gray-light)));
+			}
+			.toc--collapsed .toc__toggle {
+				min-width: 2.75rem;
+				padding-inline: 0.55rem;
+			}
+			.toc__nav {
+				text-align: left;
+			}
+			.toc ol {
+				list-style: none;
+				margin: 0;
+				padding: 0;
+				display: grid;
+				gap: 0.45rem;
+			}
+			.toc li {
+				margin: 0;
+			}
+			.toc-link {
+				display: block;
+				color: rgb(var(--gray-dark));
+				text-decoration: none;
+				line-height: 1.4;
+				text-align: left;
+			}
+			.toc-link:hover {
+				color: var(--accent);
+			}
+			.toc-link--depth-3 {
+				padding-left: 0.9rem;
+				font-size: 0.94rem;
+			}
+			@media (max-width: 900px) {
+				.toc {
+					top: 5.5rem;
+					right: 0.75rem;
+					width: min(16.5rem, calc(100vw - 1.5rem));
+				}
+			}
+			@media (max-width: 720px) {
+				.toc {
+					top: auto;
+					bottom: 0.75rem;
+					right: 0.75rem;
+					width:fit-content
+				}
+			}
 		</style>
 	</head>
 
 	<body>
 		<Header />
 		<main>
-			<article>
-				<div class="hero-image">
+			<div class="post-shell">
+				<article class="post-shell__article">
+					<div class="hero-image">
 					{
 						heroImage && (
 							<Image
@@ -140,8 +266,32 @@ const { title, description, pubDate, updatedDate, heroImage, tags = [] } =
 						<hr />
 					</div>
 					<slot />
-				</div>
-			</article>
+					</div>
+				</article>
+				{
+					tocHeadings.length > 0 && (
+						<aside class="toc" aria-label="文章目录" data-toc>
+							<div class="toc__header">
+								<p class="toc__title">目录</p>
+								<button class="toc__toggle" type="button" aria-expanded="true" aria-controls="toc-list" data-toc-toggle>
+									收回
+								</button>
+							</div>
+							<nav class="toc__nav" id="toc-list" data-toc-nav>
+								<ol>
+									{tocHeadings.map((heading) => (
+										<li>
+											<a class={`toc-link toc-link--depth-${heading.depth}`} href={`#${heading.slug}`}>
+												{heading.text}
+											</a>
+										</li>
+									))}
+								</ol>
+							</nav>
+						</aside>
+					)
+				}
+			</div>
 			<div class="prose">
 				<script
 				src="https://giscus.app/client.js"
@@ -161,6 +311,30 @@ const { title, description, pubDate, updatedDate, heroImage, tags = [] } =
 				async
 			></script>
 			</div>
+			<script>
+				const toc = document.querySelector("[data-toc]");
+				const toggle = document.querySelector("[data-toc-toggle]");
+				const nav = document.querySelector("[data-toc-nav]");
+				const storageKey = "astro-blog-toc-collapsed";
+
+				if (toc instanceof HTMLElement && toggle instanceof HTMLButtonElement && nav instanceof HTMLElement) {
+					const applyState = (collapsed: boolean) => {
+						toc.classList.toggle("toc--collapsed", collapsed);
+						toggle.setAttribute("aria-expanded", String(!collapsed));
+						toggle.textContent = collapsed ? "目录" : "收回";
+						nav.hidden = collapsed;
+					};
+
+					const savedState = window.localStorage.getItem(storageKey);
+					applyState(savedState === "1");
+
+					toggle.addEventListener("click", () => {
+						const collapsed = !toc.classList.contains("toc--collapsed");
+						applyState(collapsed);
+						window.localStorage.setItem(storageKey, collapsed ? "1" : "0");
+					});
+				}
+			</script>
 		</main>
 		<Footer />
 	</body>
