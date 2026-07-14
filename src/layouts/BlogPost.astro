@@ -389,6 +389,44 @@ const tocHeadings = headings.filter(
 					async></script>
 			</div>
 			<script>
+				const getStoredThemePreference = () => {
+					const savedTheme = window.localStorage.getItem("theme");
+					return savedTheme === "dark" || savedTheme === "light"
+						? savedTheme
+						: null;
+				};
+
+				const getGiscusTheme = (preferredTheme: "dark" | "light" | null = null) => {
+					const resolvedTheme =
+						preferredTheme ??
+						(document.documentElement.getAttribute("data-theme") ===
+						"dark"
+							? "dark"
+							: "light");
+
+					return resolvedTheme === "dark" ? "dark_dimmed" : "light";
+				};
+
+				const syncGiscusTheme = (
+					preferredTheme: "dark" | "light" | null = null,
+				) => {
+					const iframe = document.querySelector(
+						"iframe.giscus-frame",
+					);
+					if (!(iframe instanceof HTMLIFrameElement)) return;
+
+					iframe.contentWindow?.postMessage(
+						{
+							giscus: {
+								setConfig: {
+									theme: getGiscusTheme(preferredTheme),
+								},
+							},
+						},
+						"https://giscus.app",
+					);
+				};
+
 				const toc = document.querySelector("[data-toc]");
 				const toggle = document.querySelector("[data-toc-toggle]");
 				const nav = document.querySelector("[data-toc-nav]");
@@ -421,6 +459,27 @@ const tocHeadings = headings.filter(
 						);
 					});
 				}
+
+				const themeObserver = new MutationObserver(() => {
+					syncGiscusTheme();
+				});
+
+				themeObserver.observe(document.documentElement, {
+					attributes: true,
+					attributeFilter: ["data-theme"],
+				});
+
+				window.addEventListener(
+					"load",
+					() => {
+						const storedPreference = getStoredThemePreference();
+						syncGiscusTheme(storedPreference);
+					},
+					{ once: true },
+				);
+				document.addEventListener("astro:page-load", () => {
+					syncGiscusTheme();
+				});
 			</script>
 		</main>
 		<Footer />
