@@ -3,6 +3,7 @@ import { defineConfig } from "astro/config";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import mermaid from "astro-mermaid";
+import icon from "astro-icon";
 
 import cloudflare from "@astrojs/cloudflare";
 import remarkMath from "remark-math";
@@ -14,6 +15,11 @@ export default defineConfig({
 	integrations: [
 		mdx(),
 		sitemap(),
+		icon({
+			include: {
+				mdi: ["rss", "mastodon", "github"],
+			},
+		}),
 		mermaid({
 			theme: 'forest',
 			autoTheme: true
