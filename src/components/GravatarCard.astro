@@ -1,0 +1,85 @@
+---
+interface Props {
+	hash: string;
+	profileUrl: string;
+	displayName: string;
+	bio?: string;
+	location?: string;
+}
+
+const {
+	hash,
+	profileUrl,
+	displayName,
+	bio = "欢迎来到我的个人主页。",
+	location = "",
+} = Astro.props as Props;
+
+const avatarUrl = `https://www.gravatar.com/avatar/${hash}?s=320&d=mp&r=g`;
+---
+
+<section class="gravatar-card" aria-label="Gravatar Card">
+	<a class="avatar-link" href={profileUrl} target="_blank" rel="noreferrer">
+		<img src={avatarUrl} alt={`${displayName} avatar`} loading="lazy" />
+	</a>
+	<div class="content">
+		<h3>{displayName}</h3>
+		{location && <p class="meta">{location}</p>}
+		<p>{bio}</p>
+		<a class="profile-link" href={profileUrl} target="_blank" rel="noreferrer">
+			查看 Gravatar 主页
+		</a>
+	</div>
+</section>
+
+<style>
+	.gravatar-card {
+		display: grid;
+		grid-template-columns: 104px minmax(0, 1fr);
+		gap: 1rem;
+		align-items: center;
+		padding: 1rem;
+		margin: 1.5rem 0;
+		border-radius: 14px;
+		background: rgb(var(--surface));
+		border: 1px solid rgb(var(--gray-light));
+		box-shadow: 0 6px 20px rgba(var(--black), 0.08);
+	}
+	.avatar-link {
+		display: inline-flex;
+		align-self: start;
+	}
+	.avatar-link img {
+		width: 96px;
+		height: 96px;
+		border-radius: 50%;
+		object-fit: cover;
+		border: 2px solid rgb(var(--gray-light));
+	}
+	.content h3 {
+		margin: 0;
+		font-size: 1.15rem;
+	}
+	.meta {
+		margin: 0.35rem 0;
+		color: rgb(var(--gray));
+		font-size: 0.95rem;
+	}
+	.content p {
+		margin: 0.35rem 0 0;
+	}
+	.profile-link {
+		display: inline-block;
+		margin-top: 0.6rem;
+		font-weight: 700;
+	}
+	@media (max-width: 720px) {
+		.gravatar-card {
+			grid-template-columns: 1fr;
+			text-align: center;
+		}
+		.avatar-link {
+			justify-content: center;
+		}
+	}
+</style>

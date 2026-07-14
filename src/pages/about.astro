@@ -1,19 +1,30 @@
 ---
 import cover from "../assets/cover.jpg";
-import Layout from '../layouts/BlogPost.astro';
+import Layout from "../layouts/BlogPost.astro";
+import GravatarCard from "../components/GravatarCard.astro";
+
+const GRAVATAR_HASH = "c063a1121740bb12004eab408ea14729";
+const GRAVATAR_PROFILE = "https://gravatar.com/gujial";
 ---
 
 <Layout
 	title="About Me"
 	description="Lorem ipsum dolor sit amet"
-	pubDate={new Date('Jul 13 2026')}
+	pubDate={new Date("Jul 13 2026")}
 	heroImage={cover}
 >
+	<GravatarCard
+		hash={GRAVATAR_HASH}
+		profileUrl={GRAVATAR_PROFILE}
+		displayName="Gujial"
+		location="Inner Mongolia, China"
+		bio="Software developer, open-source learner, and AI enthusiast."
+	/>
 	<p>
 		Hello, I'm Gujial, a passionate software developer and technology enthu
 		siast. I love exploring new technologies, building innovative applicati
 		ons, and sharing my knowledge with the community. In this blog, I write
-		 about my experiences, tutorials, and insights on various programming l
-		 anguages, frameworks, and tools.
+		about my experiences, tutorials, and insights on various programming l
+		anguages, frameworks, and tools.
 	</p>
 </Layout>
