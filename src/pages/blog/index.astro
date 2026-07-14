@@ -20,6 +20,7 @@ const allTags = Array.from(
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
 		<style>
+			:global(body) { background-size: 100% 230px; }
 			main {
 				width: 960px;
 			}
@@ -181,6 +182,7 @@ const allTags = Array.from(
 				color: #fff;
 			}
 			@media (max-width: 720px) {
+				background-size: 100% 200px;
 				.toolbar {
 					grid-template-columns: 1fr;
 				}
