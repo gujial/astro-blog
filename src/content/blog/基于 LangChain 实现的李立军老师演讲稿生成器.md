@@ -3,6 +3,7 @@ title: "基于 LangChain 实现的李立军老师演讲稿生成器"
 description: "想你了，牢军"
 pubDate: "Dec 14 2025"
 heroImage: "../../assets/li-li-jun.jpg"
+tags: ["LLM", "LangChain", "Prompt Engineering", "Python"]
 ---
 
 毕业多年还是经常回忆起母校的物理实验室老师，他经常在课上发表慷慨激昂的演讲，虽然对他传递的价值观不敢苟同，但他那充斥着呼市方言的口音和激情满满的神情，至今仍历历在目。为此，我曾通过 VuePress 搭建了一个收集他演讲稿的网站，以便随时回忆高中生活。

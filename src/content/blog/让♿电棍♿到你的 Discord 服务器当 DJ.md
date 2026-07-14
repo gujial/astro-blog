@@ -3,6 +3,7 @@ title: 让♿电棍♿到你的 Discord 服务器当 DJ ——跨语言微服务
 description: 让♿电棍♿到你的 Discord 服务器当 DJ ——跨语言微服务架构下的“抽象”工程实践
 pubDate: "Jan 15 2026"
 heroImage: "../../assets/otto/7.png"
+tags: ["Discord", "Microservices", "音频", "架构"]
 ---
 
 > 本篇源代码丢失，迁移自微信公众号

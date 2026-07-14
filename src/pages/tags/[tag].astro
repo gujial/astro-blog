@@ -1,0 +1,161 @@
+---
+import { Image } from "astro:assets";
+import { getCollection } from "astro:content";
+import BaseHead from "../../components/BaseHead.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import FormattedDate from "../../components/FormattedDate.astro";
+
+export async function getStaticPaths() {
+	const posts = await getCollection("blog");
+	const tags = Array.from(
+		new Set(posts.flatMap((post) => post.data.tags.map((tag) => tag.trim().toLowerCase()))),
+	).sort((a, b) => a.localeCompare(b, "zh-CN"));
+
+	return tags.map((tag) => ({
+		params: { tag },
+	}));
+}
+
+const { tag } = Astro.params;
+const activeTag = (tag ?? "").trim().toLowerCase();
+const posts = (await getCollection("blog"))
+	.filter((post) => post.data.tags.some((item) => item.trim().toLowerCase() === activeTag))
+	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+
+<!doctype html>
+<html>
+	<head>
+		<BaseHead title={`标签: #${activeTag}`} description={`标签 #${activeTag} 下的文章列表`} />
+		<style>
+			main {
+				width: 960px;
+			}
+			.title {
+				margin: 0 0 0.5rem;
+				font-size: 1.75rem;
+			}
+			.meta {
+				margin: 0 0 1.25rem;
+				color: rgb(var(--gray));
+				font-size: 0.95rem;
+			}
+			.back-link {
+				display: inline-block;
+				margin-bottom: 1rem;
+				font-size: 0.92rem;
+			}
+			ul {
+				display: grid;
+				gap: 1.25rem;
+				list-style-type: none;
+				margin: 0;
+				padding: 0;
+			}
+			ul li {
+				width: 100%;
+				padding-bottom: 1.25rem;
+				border-bottom: 1px solid rgb(var(--gray-light));
+			}
+			ul li:last-child {
+				padding-bottom: 0;
+				border-bottom: none;
+			}
+			ul li * {
+				text-decoration: none;
+				transition: 0.2s ease;
+			}
+			.post-image {
+				width: 100%;
+				height: 100%;
+				max-width: 280px;
+				aspect-ratio: 16 / 9;
+				object-fit: cover;
+				border-radius: 12px;
+			}
+			ul li a {
+				display: grid;
+				grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
+				gap: 1.25rem;
+				align-items: center;
+				color: inherit;
+			}
+			ul li a > div {
+				display: grid;
+				gap: 0.35rem;
+				align-content: center;
+			}
+			.card-title {
+				margin: 0;
+				color: rgb(var(--black));
+				line-height: 1.2;
+			}
+			.date {
+				margin: 0;
+				color: rgb(var(--gray));
+				font-size: 0.95rem;
+			}
+			ul li a:hover .card-title,
+			ul li a:hover .date {
+				color: var(--accent);
+			}
+			ul a:hover .post-image {
+				box-shadow: var(--box-shadow);
+			}
+			@media (max-width: 720px) {
+				ul {
+					gap: 1rem;
+				}
+				ul li {
+					width: 100%;
+					padding-bottom: 1rem;
+				}
+				ul li a {
+					grid-template-columns: 1fr;
+					gap: 0.75rem;
+				}
+				.post-image {
+					max-width: none;
+				}
+				ul li a > div {
+					gap: 0.25rem;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<a class="back-link" href="/blog/">返回博客列表</a>
+			<h1 class="title">标签：#{activeTag}</h1>
+			<p class="meta">共 {posts.length} 篇文章</p>
+			<ul>
+				{
+					posts.map((post) => (
+						<li>
+							<a href={`/blog/${post.id}/`}>
+								{post.data.heroImage && (
+									<Image
+										class="post-image"
+										src={post.data.heroImage}
+										alt=""
+										width={280}
+										height={158}
+									/>
+								)}
+								<div>
+									<h4 class="card-title">{post.data.title}</h4>
+									<p class="date">
+										<FormattedDate date={post.data.pubDate} />
+									</p>
+								</div>
+							</a>
+						</li>
+					))
+				}
+			</ul>
+		</main>
+		<Footer />
+	</body>
+</html>

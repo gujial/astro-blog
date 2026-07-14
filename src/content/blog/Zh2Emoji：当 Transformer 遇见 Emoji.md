@@ -3,6 +3,7 @@ title: "Zh2Emoji：当 Transformer 遇见 Emoji"
 description: "智能输入法？"
 pubDate: "Dec 21 2025"
 heroImage: "../../assets/640.png"
+tags: ["NLP", "Transformer", "Emoji", "Python"]
 ---
 
 就像牢大离不开肘击，现代数字通信离不开 Emoji。Emoji 已经成为一种能够跨越语言障碍、增强情感表达和提升沟通趣味性的重要视觉元素。本项目旨在通过深度学习的技术，将 Emoji 自动嵌入到日常交流之中，提升表达的表现力，为日常沟通添加些许幽默感😋。

@@ -3,6 +3,7 @@ title: 遥遥领先！基于《易经》中的中国哲学实现 Linux 进程调
 description: 尝试打破工程学的枯燥，从中国最古老的经典《易经》中汲取灵感，构建了一套名为 \x26quot;风水\x26quot; 的 Linux 进程调度算法。
 pubDate: "Feb 17 2026"
 heroImage: "../../assets/yijin/1.png"
+tags: ["Linux", "内核", "调度", "系统编程"]
 ---
 
 > 本篇源代码丢失，迁移自微信公众号

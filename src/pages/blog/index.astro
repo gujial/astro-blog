@@ -10,6 +10,9 @@ import FormattedDate from "../../components/FormattedDate.astro";
 const posts = (await getCollection("blog")).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
+const allTags = Array.from(
+	new Set(posts.flatMap((post) => post.data.tags ?? [])),
+).sort((a, b) => a.localeCompare(b, "zh-CN"));
 ---
 
 <!doctype html>
@@ -17,15 +20,12 @@ const posts = (await getCollection("blog")).sort(
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
 		<style>
-			:global(body) {
-				background-size: 100% 260px;
-			}
 			main {
 				width: 960px;
 			}
 			.toolbar {
 				display: grid;
-				grid-template-columns: minmax(0, 1fr) 220px;
+				grid-template-columns: minmax(0, 1fr) 220px 220px;
 				gap: 0.75rem;
 				align-items: center;
 				margin-bottom: 1.25rem;
@@ -34,7 +34,8 @@ const posts = (await getCollection("blog")).sort(
 				background: color-mix(in srgb, var(--accent) 10%, rgb(var(--surface)));
 			}
 			.search-input,
-			.sort-select {
+			.sort-select,
+			.tag-select {
 				width: 100%;
 				padding: 0.55rem 0.7rem;
 				border: 1px solid rgb(var(--gray-light));
@@ -48,7 +49,8 @@ const posts = (await getCollection("blog")).sort(
 				color: rgb(var(--gray));
 			}
 			.search-input:focus,
-			.sort-select:focus {
+			.sort-select:focus,
+			.tag-select:focus {
 				outline: 2px solid color-mix(in srgb, var(--accent) 35%, transparent);
 				outline-offset: 1px;
 				border-color: var(--accent);
@@ -81,17 +83,23 @@ const posts = (await getCollection("blog")).sort(
 				object-fit: cover;
 				border-radius: 12px;
 			}
-			ul li a {
+			.post-link {
 				display: grid;
 				grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
 				gap: 1.25rem;
 				align-items: center;
 				color: inherit;
 			}
-			ul li a > div {
+			.post-link > div {
+				display: grid;
+				gap: 0.45rem;
+				align-content: center;
+			}
+			.text-link {
 				display: grid;
 				gap: 0.35rem;
-				align-content: center;
+				color: inherit;
+				text-decoration: none;
 			}
 			.title {
 				margin: 0;
@@ -103,11 +111,34 @@ const posts = (await getCollection("blog")).sort(
 				color: rgb(var(--gray));
 				font-size: 0.95rem;
 			}
-			ul li a:hover .title,
-			ul li a:hover .date {
+			.tags {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.35rem;
+				margin-top: 0.2rem;
+			}
+			.tag-chip {
+				display: inline-flex;
+				align-items: center;
+				padding: 0.1rem 0.5rem;
+				border-radius: 999px;
+				border: 1px solid rgb(var(--gray-light));
+				background: rgb(var(--surface));
+				color: rgb(var(--gray));
+				font-size: 0.78rem;
+				line-height: 1.2;
+				text-decoration: none;
+			}
+			.tag-chip:hover {
+				color: var(--accent);
+				border-color: color-mix(in srgb, var(--accent) 40%, rgb(var(--gray-light)));
+				background: color-mix(in srgb, var(--accent) 10%, rgb(var(--surface)));
+			}
+			.post-link:hover .title,
+			.post-link:hover .date {
 				color: var(--accent);
 			}
-			ul a:hover .post-image {
+			.post-link:hover .post-image {
 				box-shadow: var(--box-shadow);
 			}
 			.list-meta {
@@ -150,9 +181,6 @@ const posts = (await getCollection("blog")).sort(
 				color: #fff;
 			}
 			@media (max-width: 720px) {
-				:global(body) {
-					background-size: 100% 210px;
-				}
 				.toolbar {
 					grid-template-columns: 1fr;
 				}
@@ -163,14 +191,17 @@ const posts = (await getCollection("blog")).sort(
 					width: 100%;
 					padding-bottom: 1rem;
 				}
-				ul li a {
+				.post-link {
 					grid-template-columns: 1fr;
 					gap: 0.75rem;
 				}
 				.post-image {
 					max-width: none;
 				}
-				ul li a > div {
+				.post-link > div {
+					gap: 0.25rem;
+				}
+				.text-link {
 					gap: 0.25rem;
 				}
 			}
@@ -192,6 +223,14 @@ const posts = (await getCollection("blog")).sort(
 						<option value="desc">时间倒序（最新优先）</option>
 						<option value="asc">时间正序（最早优先）</option>
 					</select>
+					<select class="tag-select" aria-label="按标签筛选" data-tag>
+						<option value="all">全部标签</option>
+						{
+							allTags.map((tag) => (
+								<option value={tag.toLowerCase()}>{tag}</option>
+							))
+						}
+					</select>
 				</div>
 				<p class="list-meta" data-meta></p>
 				<p class="empty-state" data-empty hidden>没有找到符合条件的文章。</p>
@@ -202,26 +241,45 @@ const posts = (await getCollection("blog")).sort(
 								data-post-item
 								data-title={post.data.title.toLowerCase()}
 								data-pub-date={post.data.pubDate.valueOf()}
+								data-tags={(post.data.tags ?? []).map((tag) => tag.toLowerCase()).join("|")}
 							>
-								<a href={`/blog/${post.id}/`}>
-									{post.data.heroImage && (
-										<Image
-											class="post-image"
-											src={post.data.heroImage}
-											alt=""
-											width={280}
-											height={158}
-										/>
-									)}
-									<div>
-										<h4 class="title">{post.data.title}</h4>
-										<p class="date">
-											<FormattedDate
-												date={post.data.pubDate}
+								<div class="post-link">
+									<a href={`/blog/${post.id}/`}>
+										{post.data.heroImage && (
+											<Image
+												class="post-image"
+												src={post.data.heroImage}
+												alt=""
+												width={280}
+												height={158}
 											/>
-										</p>
+										)}
+									</a>
+									<div>
+										<a class="text-link" href={`/blog/${post.id}/`}>
+											<h4 class="title">{post.data.title}</h4>
+											<p class="date">
+												<FormattedDate
+													date={post.data.pubDate}
+												/>
+											</p>
+										</a>
+										{
+											post.data.tags.length > 0 && (
+												<div class="tags" aria-label="文章标签">
+													{post.data.tags.map((tag) => (
+														<a
+															class="tag-chip"
+															href={`/tags/${encodeURIComponent(tag.toLowerCase())}/`}
+														>
+															#{tag}
+														</a>
+													))}
+												</div>
+											)
+										}
 									</div>
-								</a>
+								</div>
 							</li>
 						))
 					}
@@ -235,6 +293,7 @@ const posts = (await getCollection("blog")).sort(
 			const list = document.querySelector("[data-post-list]") as HTMLUListElement | null;
 			const searchInput = document.querySelector("[data-search]") as HTMLInputElement | null;
 			const sortSelect = document.querySelector("[data-sort]") as HTMLSelectElement | null;
+			const tagSelect = document.querySelector("[data-tag]") as HTMLSelectElement | null;
 			const meta = document.querySelector("[data-meta]") as HTMLParagraphElement | null;
 			const empty = document.querySelector("[data-empty]") as HTMLParagraphElement | null;
 			const pagination = document.querySelector("[data-pagination]") as HTMLElement | null;
@@ -245,6 +304,7 @@ const posts = (await getCollection("blog")).sort(
 			const state = {
 				query: "",
 				sort: "desc" as "asc" | "desc",
+				tag: "all",
 				page: 1,
 			};
 
@@ -256,9 +316,12 @@ const posts = (await getCollection("blog")).sort(
 
 			const getFilteredAndSorted = () => {
 				const query = state.query.trim().toLowerCase();
-				const filtered = items.filter((item) =>
-					(item.dataset.title || "").includes(query),
-				);
+				const filtered = items.filter((item) => {
+					const matchesTitle = (item.dataset.title || "").includes(query);
+					const tags = (item.dataset.tags || "").split("|").filter(Boolean);
+					const matchesTag = state.tag === "all" || tags.includes(state.tag);
+					return matchesTitle && matchesTag;
+				});
 				return filtered.sort((a, b) => compareByDate(a, b, state.sort));
 			};
 
@@ -346,6 +409,14 @@ const posts = (await getCollection("blog")).sort(
 				if (!(event.currentTarget instanceof HTMLSelectElement)) return;
 				const target = event.currentTarget;
 				state.sort = target.value === "asc" ? "asc" : "desc";
+				state.page = 1;
+				render();
+			});
+
+			tagSelect?.addEventListener("change", (event: Event) => {
+				if (!(event.currentTarget instanceof HTMLSelectElement)) return;
+				const target = event.currentTarget;
+				state.tag = target.value;
 				state.page = 1;
 				render();
 			});
