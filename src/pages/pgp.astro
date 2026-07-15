@@ -1,0 +1,135 @@
+---
+import BaseHead from "../components/BaseHead.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+---
+
+<!doctype html>
+<html>
+	<head>
+		<BaseHead
+			title="PGP Key Fingerprints"
+			description="GPG/PGP 公钥指纹与下载地址，用于核验签名与加密通信。"
+		/>
+		<style>
+			:global(body) {
+				background-size: 100% 0px;
+			}
+
+			main {
+				display: grid;
+				gap: 1.5rem;
+			}
+			.lead {
+				margin: 0;
+				color: rgb(var(--gray));
+			}
+			.card {
+				min-width: 0;
+				border: 1px solid rgb(var(--gray-light));
+				border-radius: 12px;
+				padding: 1rem;
+				background: rgb(var(--surface));
+			}
+			.card h2 {
+				margin-bottom: 0.6rem;
+			}
+			.meta {
+				margin: 0.2rem 0;
+				color: rgb(var(--gray));
+				font-size: 0.95rem;
+			}
+			.fingerprint {
+				display: inline-block;
+				max-width: 100%;
+				font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+					"Liberation Mono", "Courier New", monospace;
+				font-size: 1rem;
+				line-height: 1.5;
+				word-break: break-word;
+				overflow-wrap: anywhere;
+				padding: 0.5rem 0.6rem;
+				border-radius: 8px;
+				background: rgb(var(--gray-light));
+				color: rgb(var(--gray-dark));
+			}
+			.links {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.6rem;
+				margin-top: 0.75rem;
+			}
+			.links a {
+				display: inline-block;
+				text-decoration: none;
+				padding: 0.35rem 0.65rem;
+				border-radius: 999px;
+				border: 1px solid rgb(var(--gray-light));
+			}
+			.links a:hover {
+				border-color: var(--accent);
+			}
+			code {
+				font-size: 0.92rem;
+			}
+			pre {
+				max-width: 100%;
+				min-width: 0;
+				box-sizing: border-box;
+				overflow-x: auto;
+				-webkit-overflow-scrolling: touch;
+			}
+			@media (max-width: 720px) {
+				main {
+					gap: 1rem;
+				}
+				.card {
+					padding: 0.85rem;
+					border-radius: 10px;
+				}
+				.fingerprint {
+					display: block;
+					font-size: 0.9rem;
+					line-height: 1.45;
+				}
+				.links a {
+					padding: 0.45rem 0.7rem;
+				}
+				pre {
+					padding: 1rem;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<section>
+				<h1>PGP 公钥核验</h1>
+				<p class="lead">
+					公钥已发布到密钥服务器。请以本页面公布的指纹为准核对签名。仅在指纹完全一致时信任该公钥。
+				</p>
+			</section>
+
+			<section class="card" aria-labelledby="primary-key">
+				<h2 id="primary-key">公开密钥</h2>
+				<p class="meta">Key ID: DDC9F70191CA14A3 (ed25519)</p>
+				<p class="meta">创建时间: 2025-10-19</p>
+				<p class="meta">UID: gujial &lt;gujial@gujial.cc&gt; 等</p>
+				<p class="fingerprint">221D 9DAD C996 6EF9 4D67 00F0 DDC9 F701 91CA 14A3</p>
+				<div class="links">
+					<a href="/keys/gujial-2025.asc">下载 ASCII 公钥</a>
+				</div>
+			</section>
+
+			<section class="card" aria-labelledby="verify-commands">
+				<h2 id="verify-commands">核验命令示例</h2>
+				<pre><code>curl -fsS https://gujial.cc/keys/gujial-2025.asc | gpg --import
+gpg --fingerprint DDC9F70191CA14A3
+</code></pre>
+				<p class="meta">若输出指纹与本页不一致，请不要使用该公钥。</p>
+			</section>
+		</main>
+		<Footer />
+	</body>
+</html>
