@@ -113,8 +113,7 @@ graph LR
 本项目的示例文章和提示词模板都放在了`.md` 文件中，所以需要读取其中的内容。
 这里创建两个函数。
 
-```Python
-
+```python
 def load_file_content(file_path):
     return Path(file_path).read_text(encoding='utf-8')
 
@@ -137,8 +136,7 @@ def load_examples(data_dir):
 
 #### 初始化流水线
 
-```Python
-    
+```python
 def init_pipeline(base_dir=None):
     # 1. 确定文件路径 (保证无论在哪里运行脚本，都能找到文件)
     if base_dir is None:
@@ -167,7 +165,7 @@ def init_pipeline(base_dir=None):
 
 #### 核心生成逻辑
 
-```Python
+```python
 def generate_article(model_repo, topic, event, requirements):
     # 0. 安全检查：确保 pipeline 已经初始化
     if PROMPT_PIPELINE is None:
@@ -231,7 +229,7 @@ def generate_article(model_repo, topic, event, requirements):
 界面实现比较简单，分为左右两个部分，左侧用于用户输入，右侧用于展示结果，其中右侧通过标签页实现结果和调试信息的切换。
 
 创建`app.py`文件
-```Python
+```python
 import gradio as gr
 import utils
 
