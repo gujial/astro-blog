@@ -371,22 +371,7 @@ const tocHeadings = headings.filter(
 				}
 			</div>
 			<div class="prose">
-				<script
-					src="https://giscus.app/client.js"
-					data-repo="gujial/astro-blog"
-					data-repo-id="R_kgDOTVv5EQ"
-					data-category="Announcements"
-					data-category-id="DIC_kwDOTVv5Ec4DBJwv"
-					data-mapping="pathname"
-					data-strict="0"
-					data-reactions-enabled="1"
-					data-emit-metadata="0"
-					data-input-position="bottom"
-					data-theme="preferred_color_scheme"
-					data-lang="zh-CN"
-					data-loading="lazy"
-					crossorigin="anonymous"
-					async></script>
+				<div data-giscus-container></div>
 			</div>
 			<script>
 				const getStoredThemePreference = () => {
@@ -425,6 +410,35 @@ const tocHeadings = headings.filter(
 						},
 						"https://giscus.app",
 					);
+				};
+
+				const mountGiscus = () => {
+					const container = document.querySelector("[data-giscus-container]");
+					if (!(container instanceof HTMLElement)) return;
+					if (container.querySelector("script[data-giscus-script]")) return;
+
+					const script = document.createElement("script");
+					script.src = "https://giscus.app/client.js";
+					script.async = true;
+					script.crossOrigin = "anonymous";
+					script.setAttribute("data-giscus-script", "1");
+					script.setAttribute("data-repo", "gujial/astro-blog");
+					script.setAttribute("data-repo-id", "R_kgDOTVv5EQ");
+					script.setAttribute("data-category", "Announcements");
+					script.setAttribute("data-category-id", "DIC_kwDOTVv5Ec4DBJwv");
+					script.setAttribute("data-mapping", "pathname");
+					script.setAttribute("data-strict", "0");
+					script.setAttribute("data-reactions-enabled", "1");
+					script.setAttribute("data-emit-metadata", "0");
+					script.setAttribute("data-input-position", "bottom");
+					script.setAttribute("data-lang", "zh-CN");
+					script.setAttribute("data-loading", "lazy");
+					script.setAttribute(
+						"data-theme",
+						getGiscusTheme(getStoredThemePreference()),
+					);
+
+					container.appendChild(script);
 				};
 
 				const toc = document.querySelector("[data-toc]");
@@ -472,12 +486,14 @@ const tocHeadings = headings.filter(
 				window.addEventListener(
 					"load",
 					() => {
+						mountGiscus();
 						const storedPreference = getStoredThemePreference();
 						syncGiscusTheme(storedPreference);
 					},
 					{ once: true },
 				);
 				document.addEventListener("astro:page-load", () => {
+					mountGiscus();
 					syncGiscusTheme();
 				});
 			</script>
