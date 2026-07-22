@@ -158,12 +158,10 @@ pre {
 	font-size: 13px;
 }
 
-
 .astro-code {
 	overflow-x: auto;
 	border: 1px solid rgb(var(--gray-light));
 }
-
 
 :root[data-theme="dark"] .astro-code {
 	background-color: var(--shiki-dark-bg) !important;
