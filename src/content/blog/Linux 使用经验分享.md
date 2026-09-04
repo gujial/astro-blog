@@ -2,7 +2,7 @@
 title: "Linux 使用经验分享"
 description: "关于 Linux 的使用心得"
 pubDate: "Sep 3 2026"
-heroImage: "../../assets/将军请下命令吧.png"
+heroImage: "../../assets/linux.webp"
 tags: ["Linux", "操作系统"]
 ---
 
@@ -1029,7 +1029,7 @@ nix develop nixpkgs#firefox
 **Linux 与 Windows 的核心差异：**
 
 | 维度 | Linux | Windows |
-|------|-------|---------|
+| ------ | ------- | --------- |
 | **开源性** | ✅ 完全开源 | ❌ 闭源专有 |
 | **自由度** | ✅ 极高可定制 | ⚠️ 受限于系统设计 |
 | **软件管理** | ✅ 集中标准化 | ⚠️ 分散混乱 |
@@ -1058,11 +1058,11 @@ nix develop nixpkgs#firefox
 
 Linux 正处于一个激动人心的时代：
 
-- **硬件支持日趋完善** - 越来越多的厂商主动支持 Linux
-- **游戏生态改善** - Proton 和原生支持使 Linux 游戏体验大幅提升
-- **声明式配置革命** - NixOS 等新型发行版改变系统管理方式
-- **AI 赋能系统** - 大语言模型结合 Linux 的可编程性，系统维护将被重塑
-- **社区力量强大** - 数百万开发者、数千个开源项目推动生态繁荣
+* **硬件支持日趋完善** - 越来越多的厂商主动支持 Linux
+* **游戏生态改善** - Proton 和原生支持使 Linux 游戏体验大幅提升
+* **声明式配置革命** - NixOS 等新型发行版改变系统管理方式
+* **AI 赋能系统** - 大语言模型结合 Linux 的可编程性，系统维护将被重塑
+* **社区力量强大** - 数百万开发者、数千个开源项目推动生态繁荣
 
 **最后的话：**
 
@@ -1072,8 +1072,8 @@ Linux 正处于一个激动人心的时代：
 
 **延伸阅读：**
 
-- [Arch Linux Wiki](https://wiki.archlinux.org/) - 最全面的 Linux 文档
-- [Linux From Scratch](https://www.linuxfromscratch.org/) - 深入理解 Linux
-- [The Linux Documentation Project](https://tldp.org/) - 详尽的 Linux 教程
-- [NixOS Manual](https://nixos.org/manual/nixos/stable/) - Nix 官方文档
-- [Proton 兼容性数据库](https://protondb.com/) - 游戏兼容性查询
+* [Arch Linux Wiki](https://wiki.archlinux.org/) - 最全面的 Linux 文档
+* [Linux From Scratch](https://www.linuxfromscratch.org/) - 深入理解 Linux
+* [The Linux Documentation Project](https://tldp.org/) - 详尽的 Linux 教程
+* [NixOS Manual](https://nixos.org/manual/nixos/stable/) - Nix 官方文档
+* [Proton 兼容性数据库](https://protondb.com/) - 游戏兼容性查询
