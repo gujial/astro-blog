@@ -130,8 +130,13 @@ input {
 	font-size: 13px;
 }
 
-table {
-	width: 100%;
+.prose table {
+	display: block;
+	width: max-content;
+	min-width: 100%;
+	max-width: 100%;
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
 }
 
 img {
