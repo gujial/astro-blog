@@ -12,6 +12,7 @@ type Props = Omit<CollectionEntry<"blog">["data"], "heroImage" | "tags"> & {
 	heroImage?: ImageMetadata;
 	tags?: string[];
 	headings?: MarkdownHeading[];
+	shareType?: "website" | "article";
 };
 
 const {
@@ -22,11 +23,13 @@ const {
 	heroImage,
 	tags = [],
 	headings = [],
+	shareType = "website",
 } = Astro.props as Props;
 
 const tocHeadings = headings.filter(
 	(heading) => heading.depth >= 2 && heading.depth <= 3,
 );
+const socialImage = heroImage?.src;
 ---
 
 <html>
@@ -37,7 +40,14 @@ const tocHeadings = headings.filter(
 			integrity="sha384-Htz9HMhiwV8GuQ28Xr9pEs1B4qJiYu/nYLLwlDklR53QibDfmQzi7rYxXhMH/5/u"
 			crossorigin="anonymous"
 		/>
-		<BaseHead title={title} description={description} />
+		<BaseHead
+			title={title}
+			description={description}
+			image={socialImage}
+			pageType={shareType}
+			publishedTime={shareType === "article" ? pubDate.toISOString() : undefined}
+			modifiedTime={shareType === "article" && updatedDate ? updatedDate.toISOString() : undefined}
+		/>
 		<style>
 			main {
 				width: 900px;
