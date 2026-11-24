@@ -11,35 +11,30 @@ import rehypeKatex from "rehype-katex";
 
 // https://astro.build/config
 export default defineConfig({
-	site: "https://gujial.cc",
-	integrations: [
-		mdx(),
-		sitemap(),
-		icon({
-			include: {
-				mdi: ["rss", "mastodon", "github"],
-			},
-		}),
-		mermaid({
-			theme: 'forest',
-			autoTheme: true
-		})
-	],
-	adapter: cloudflare({
-		platformProxy: {
-			enabled: true,
-		},
-	}),
-	markdown: {
-		syntaxHighlight: "shiki",
-		shikiConfig: {
-			themes: {
-				light: "github-light",
-				dark: "github-dark",
-			},
-			wrap: false,
-		},
-		remarkPlugins: [remarkMath],
-		rehypePlugins: [rehypeKatex],
-	},
+  site: "https://gujial.cc",
+  integrations: [
+    mdx(),
+    sitemap(),
+    icon({
+      include: {
+        mdi: ["rss", "mastodon", "github"],
+      },
+    }),
+    mermaid({
+      theme: 'forest',
+      autoTheme: true
+    })
+  ],
+  markdown: {
+    syntaxHighlight: "shiki",
+    shikiConfig: {
+      themes: {
+        light: "github-light",
+        dark: "github-dark",
+      },
+      wrap: false,
+    },
+    remarkPlugins: [remarkMath],
+    rehypePlugins: [rehypeKatex],
+  },
 });
